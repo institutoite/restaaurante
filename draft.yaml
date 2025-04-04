@@ -1,0 +1,101 @@
+models:
+  User:
+    name: string
+    email: string unique
+    password: string
+    phone: string? nullable
+    remember_token: string? nullable
+    timestamps: ~
+
+  Branch:
+    name: string
+    code: string unique
+    address: string
+    phone: string
+    email: string? nullable
+    opening_time: time
+    closing_time: time
+    is_active: boolean default:true
+    timestamps: ~
+    softDeletes: ~
+
+  Category:
+    name: string
+    slug: string unique
+    description: text? nullable
+    image: string? nullable
+    order: integer default:0
+    is_active: boolean default:true
+    timestamps: ~
+
+  Product:
+    category_id: id foreign:categories
+    name: string
+    slug: string unique
+    description: text? nullable
+    image: string? nullable
+    product_type: string enum:food,beverage,combo,other default:food
+    has_variants: boolean default:false
+    is_combo: boolean default:false
+    track_stock: boolean default:false
+    is_active: boolean default:true
+    timestamps: ~
+    softDeletes: ~
+
+  Variant:
+    name: string
+    type: string
+    is_active: boolean default:true
+    timestamps: ~
+
+  ProductVariant:
+    product_id: id foreign:products
+    variant_id: id foreign:variants
+    price: decimal precision:12 places:2
+    order: integer default:0
+    timestamps: ~
+
+  CashRegister:
+    branch_id: id foreign:branches
+    name: string
+    code: string unique
+    initial_balance: decimal precision:12 places:2 default:0
+    current_balance: decimal precision:12 places:2 default:0
+    is_open: boolean default:false
+    last_opened_at: timestamp? nullable
+    last_closed_at: timestamp? nullable
+    timestamps: ~
+
+  Order:
+    branch_id: id foreign:branches
+    user_id: id foreign:users
+    cash_register_id: id? nullable foreign:cash_registers
+    customer_id: id? nullable foreign:users
+    order_number: string unique
+    status: string enum:pending,preparing,ready,delivered,completed,cancelled default:pending
+    type: string enum:dine_in,takeaway,delivery default:dine_in
+    table_number: string? nullable
+    subtotal: decimal precision:12 places:2
+    tax_amount: decimal precision:12 places:2 default:0
+    discount_amount: decimal precision:12 places:2 default:0
+    total: decimal precision:12 places:2
+    notes: text? nullable
+    completed_at: timestamp? nullable
+    timestamps: ~
+    softDeletes: ~
+
+controllers:
+  User:
+    resource: web
+  Branch:
+    resource: web
+  Category:
+    resource: web
+  Product:
+    resource: web
+  Variant:
+    resource: web
+  CashRegister:
+    resource: web
+  Order:
+    resource: web
